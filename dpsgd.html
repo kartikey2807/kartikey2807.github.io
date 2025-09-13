@@ -203,7 +203,7 @@ figcaption {
     </div>
     <br>
     where \(\epsilon\) is the upper bound on the absolute (since the above equation is symmetric in nature) privacy loss and \(1-\delta\) is the confidence with which differential 
-    privacy is guaranteed. A stronger (and easy compute) bound is \(\epsilon,0\)-differential privacy. This states that the mechanism is <i>always</i> differentially 
+    privacy is guaranteed. A stronger (and easy compute) bound is (\(\epsilon,0\))-differential privacy. This states that the mechanism is <i>always</i> differentially 
     privacy. Given this, the formula for epsilon look 
     like 
     <br>
@@ -211,7 +211,7 @@ figcaption {
       \(\epsilon = log(\frac{Pr[M(x) \in S]}{Pr[M(y) \in S]})\)
     </div>
     <br>
-    If \(\epsilon\) is small, then probabilities of record being is either database is similar and adversay cannot distinguish. <b>Note: </b>Differential privacy is the 
+    If \(\epsilon\) is small, then probabilities of record being in either database is similar and adversay cannot distinguish. <b>Note: </b>Differential privacy is the 
     characteristic of the mechanism and does not depend on the database. Differential privacy follows two important properties: composition and post-hoc. Say, mechanism 
     \(M_1\) has privacy budget \(\epsilon_1\) and mechanism \(M_2\) has budget \(\epsilon_2\), then if these two mechanisms are applied consecutively, the total privacy 
     budget is \(\epsilon_1 + \epsilon_2\) by the composition property. And the post-hoc (or post-processing) property states that any operation applied on a differentially 
@@ -220,19 +220,31 @@ figcaption {
   <p>
   <b>Laplace Mechanism</b>
   <br>
-  This mechanism is implemented to add privacy to numeric output. First let's introduce one more concept called \(l_1\)-sensitivity (I know a lot of definitions &#128546;) 
+  This mechanism is implemented to add privacy to numeric output. First let's introduce one more concept called \(l_1\) sensitivity (I know a lot of definitions &#128546;) 
   for a query function \(f\) which is defined as 
   <br>
   <div class="container">
     \(\Delta f = max_{x,y \in D,\|x-y\|_1 \leq 1} \|f(x) - f(y)\|_1\)
   </div>
   <br>
-  Informally, this can be seen as the maximum difference in f for two adjacent databases. The Laplace mechanism states that for a function \(f\) 
+  Informally, this can be seen as the maximum difference in \(f\) for two adjacent databases. The Laplace mechanism states that for a function \(f\) 
   <br>
   <div class="container">
     \(M(x,f(.),\epsilon) = f(x) + Y\)
   </div>
-  where \(Y\) is drawn from Lap(\(\Delta f/\epsilon\))
+  <br>
+  where \(Y\) is drawn from Lap(\(\Delta f/\epsilon\)). So, \(f(x)\) is the determinitic term and \(Y\) is the noise added to ensure privacy. There is a tradeoff between 
+  sensitivity and privacy budget. Lower privacy budget (good privacy) expects more noise which leads to the output being less and less accurate. It can be proved that Laplace 
+  mechanism guarantees (\(\epsilon,0\))-differential privacy. By looking at the probability density function for x and y (two databases) 
+  <br>
+  <div class="container">
+    = \frac{p_x(z)}{p_y(z)} <br>
+    = \frac{M(x,f(.),\epsilon)}{M(y,f(.),\epsilon)} <br>
+    = \frac{\frac{\exp(-\epsilon|z-f(x)|)}{\Delta f}}{\frac{\exp(-\epsilon|z-f(y)|)}{\Delta f}} <br>
+    = \frac{\epsilon|z-f(y)| - \epsilon|z-f(x)|}{\Delta f} <br>
+    \leq \frac{\epsilon\|f(y) - f(x)\|_1}{\Delta f} <br>
+    \leq \exp(\epsilon)
+  </div>
   <br>
   </p>
 </body>
