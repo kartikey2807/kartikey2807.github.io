@@ -162,7 +162,7 @@ figcaption {
     [<a href="https://doi.org/10.1145/3168389">Wagner et al.</a>]
     [<a href="https://www.cis.upenn.edu/~aaroth/Papers/privacybook.pdf">Dwork et al.</a>]
   </h4>
-  <img src="https://afar.brightspotcdn.com/dims4/default/17b3d14/2147483647/strip/true/crop/4993x2649+0+519/resize/1440x764!/quality/90/?url=https%3A%2F%2Fk3-prod-afar-media.s3.us-west-2.amazonaws.com%2Fbrightspot%2F9e%2Ff8%2F6b5f8a0948278e15b5eeeb36c03e%2Fshutterstock-1076644442.jpg" width="800" height="500">
+  <img src="https://afar.brightspotcdn.com/dims4/default/17b3d14/2147483647/strip/true/crop/4993x2649+0+519/resize/1440x764!/quality/90/?url=https%3A%2F%2Fk3-prod-afar-media.s3.us-west-2.amazonaws.com%2Fbrightspot%2F9e%2Ff8%2F6b5f8a0948278e15b5eeeb36c03e%2Fshutterstock-1076644442.jpg" width="800" height="450">
   </div>
   <p>
     <b>Overview</b>
@@ -190,7 +190,28 @@ figcaption {
     can the user say with confidence which database contains my record? &#129300; No!!! And that's the main idea behind differential privacy - privacy through indistinguishability. 
     The formal definition follows later. Other key definitions include <i>query</i> and <i>mechanism</i>. <i>Query</i> refers to the statistics that the user asks from 
     the database. It could me mean, min, max, count, median, heavy-hitters, etc. These queries can have numeric or non-numeric results. <i>Mechanism</i> is a randomised 
-    algorithm M with some domain A and range B, such that \(M: A \rightarrow B\) and for each \(a \in A\) it gives \(M(a) = b\) where \(b \in B\) with some probability.
+    algorithm M with some domain A and range B, such that \(M: A \rightarrow \Delta B\) and for each \(a \in A\) it gives \(M(a) = b\) where \(b \in B\) with some probability.
+  </p>
+  <p>
+    <b>Differential Privacy</b>
+    <br>
+    Now the formal definition.... Let's say we have two databases x and y that adjacent \(\|x-y\|_1 \leq 1\) and a mechanism \(M\) with range \(S\). The mechanism is 
+    \(\epsilon,\delta\)-differentially private if
+    <br>
+    <div class="container">
+      \(Pr[M(x) \in S] \leq \exp(\epsilon)Pr[M(y) \in S] + \delta\)
+    </div>
+    <br>
+    where \(\epsilon\) is the upper bound on the absolute (since the above equation is symmetric in nature) privacy loss and \(1-\delta\) is the confidence with which differential 
+    privacy is guaranteed. A stronger (and easy compute) bound is \(\epsilon,0\)-differential privacy. This states that the mechanism is <i>always</i> differentially 
+    privacy. Given this, the formula for epsilon look 
+    like 
+    <br>
+    <div class="container">
+      \(\epsilon = log(\frac{Pr[M(x) \in S]}{Pr(y) \in S})\)
+    </div>
+    <br>
+    <b>Note: </b>Differential privacy is the characteristic of the mechanism and does not depend on the database.
   </p>
 </body>
 </html>
