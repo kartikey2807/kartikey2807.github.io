@@ -227,7 +227,7 @@ figcaption {
     \(\Delta f = max_{x,y \in D,\|x-y\|_1 \leq 1} \|f(x) - f(y)\|_1\)
   </div>
   <br>
-  Informally, this can be seen as the maximum difference in \(f\) for two adjacent databases. The Laplace mechanism states that for a function \(f\) 
+  Informally, this can be seen as the maximum difference in \(L_1\)-norm of \(f\) for two adjacent databases. The Laplace mechanism states that for a function \(f\) 
   <br>
   <div class="container">
     \(M(x,f(.),\epsilon) = f(x) + Y\)
@@ -235,7 +235,7 @@ figcaption {
   <br>
   where \(Y\) is drawn from Lap(\(\Delta f/\epsilon\)). So, \(f(x)\) is the determinitic term and \(Y\) is the noise added to ensure privacy. There is a tradeoff between 
   sensitivity and privacy budget. Lower privacy budget (good privacy) expects more noise which leads to the output being less and less accurate. It can be proved that Laplace 
-  mechanism guarantees (\(\epsilon,0\))-differential privacy. By looking at the probability density function for x and y (two databases) 
+  mechanism guarantees (\(\epsilon,0\))-differential privacy. By looking at the probability density function for x and y (two databases), we can see that 
   <br>
   <div class="container">
     \(= \frac{p_x(z)}{p_y(z)} 
@@ -246,6 +246,13 @@ figcaption {
     \leq \exp(\epsilon)\)
   </div>
   <br>
+  </p>
+  <p>
+  <b>Laplacian noise vs Guassian noise</b>
+  <br>
+  If we replace Laplacian noise with Gaussian noise and consider \(l_2\)-sensitivity instead of \(l_1\), then we can assure (\(\epsilon,\delta\))-differential privacy. 
+  Additionally, the variance term has some dependency on \(\delta\) term which I am not going to discuss here. But this should be enough motivate that adding noise 
+  (Laplacian or Guassian) to deterministic output can give differential privacy guarantees. And next we see how this can be added to machine learning case.
   </p>
 </body>
 </html>
