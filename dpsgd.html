@@ -208,10 +208,32 @@ figcaption {
     like 
     <br>
     <div class="container">
-      \(\epsilon = log(\frac{Pr[M(x) \in S]}{Pr(y) \in S})\)
+      \(\epsilon = log(\frac{Pr[M(x) \in S]}{Pr[M(y) \in S]})\)
     </div>
     <br>
-    <b>Note: </b>Differential privacy is the characteristic of the mechanism and does not depend on the database.
+    If \(\epsilon\) is small, then probabilities of record being is either database is similar and adversay cannot distinguish. <b>Note: </b>Differential privacy is the 
+    characteristic of the mechanism and does not depend on the database. Differential privacy follows two important properties: composition and post-hoc. Say, mechanism 
+    \(M_1\) has privacy budget \(\epsilon_1\) and mechanism \(M_2\) has budget \(\epsilon_2\), then if these two mechanisms are applied consecutively, the total privacy 
+    budget is \(\epsilon_1 + \epsilon_2\) by the composition property. And the post-hoc (or post-processing) property states that any operation applied on a differentially 
+    private output remains private (with same \(\epsilon\)). 
+  </p>
+  <p>
+  <b>Laplace Mechanism</b>
+  <br>
+  This mechanism is implemented to add privacy to numeric output. First let's introduce one more concept called \(l_1\)-sensitivity (I know a lot of definitions &#128546;) 
+  for a query function \(f\) which is defined as 
+  <br>
+  <div class="container">
+    \(\Delta f = max_{x,y \in D,\|x-y\|_1 \leq 1} \|f(x) - f(y)\|_1\)
+  </div>
+  <br>
+  Informally, this can be seen as the maximum difference in f for two adjacent databases. The Laplace mechanism states that for a function \(f\) 
+  <br>
+  <div class="container">
+    \(M(x,f(.),\epsilon) = f(x) + Y\)
+  </div>
+  where \(Y\) is drawn from Lap(\(\Delta f/\epsilon\))
+  <br>
   </p>
 </body>
 </html>
