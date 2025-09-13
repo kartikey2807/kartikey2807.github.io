@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Differentially-Private SGD</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="icon" type="image/svg+xml" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y="0.9em" font-size="90">&#x1F916;</text></svg>'>
+  <style>
+    body {
+  background-color: #121212;
+  color: #e0e0e0;
+  font-family: 'Helvetica Neue', sans-serif;
+  margin: 40px auto;
+  max-width: 800px;
+  line-height: 1.6;
+  text-align: justify;
+  box-sizing: border-box;
+  padding-top: 5px; /* to avoid content hidden under fixed header */
+  overflow-x: hidden; /* prevent horizontal scroll */
+}
+
+/* Make sure all elements use border-box */
+*, *::before, *::after {
+  box-sizing: inherit;
+}
+
+.header-ribbon {
+  background: rgba(20,20,20,1);
+  color: white;
+  padding: 10px 0px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: Arial, sans-serif;
+  position: fixed;
+  top: 0;
+  width: 800px; /* match body max-width */
+  max-width: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  box-sizing: border-box;
+}
+
+.left-links, .right-links {
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap; /* prevent wrapping */
+  white-space: nowrap; /* prevent link text wrapping */
+}
+
+.header-ribbon a {
+  color: white;
+  text-decoration: none;
+  margin-left: 15px;
+  display: flex;
+  align-items: center;
+}
+
+.header-ribbon a:first-child {
+  margin-left: 0;
+}
+
+.header-ribbon a:hover {
+  text-decoration: underline;
+}
+
+.right-links i {
+  margin-right: 6px;
+}
+
+.card-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-top: 40px;
+  justify-content: center;
+}
+
+.card {
+  background-color: #1e1e1e;
+  color: #e0e0e0;
+  border-radius: 10px;
+  padding: 20px;
+  width: calc(50% - 20px); /* 2 cards per row with spacing */
+  text-decoration: none;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+}
+
+.card h3 {
+  margin-top: 0;
+  font-size: 1.2em;
+  color: #ffffff;
+  text-align: left;
+}
+
+.card p {
+  margin-bottom: 0;
+  font-size: 0.95em;
+  color: #cccccc;
+  text-align: left;
+}
+
+/* Responsive: Stack on smaller screens */
+@media (max-width: 900px) {
+  .card {
+    width: calc(50% - 20px);
+  }
+}
+
+@media (max-width: 500px) {
+  .card {
+    width: 100%;
+  }
+}
+  </style>
+</head>
+<body>
+
+  <div class="header-ribbon">
+    <div class="left-links">
+      <a href="index.html" title="Go to Home">
+        <i class="fas fa-home" style="margin-right: 6px;"></i> Home
+      </a>
+    </div>
+    <div class="right-links">
+      <a href="https://www.linkedin.com/in/kartikey2807/" target="_blank" title="LinkedIn">
+        <i class="fab fa-linkedin"></i>
+      </a>
+      <a href="https://github.com/kartikey2807" target="_blank" title="GitHub">
+        <i class="fab fa-github"></i>
+      </a>
+      <a href="mailto:kartikey2807@gmail.com" title="Email Me">
+        <i class="fas fa-envelope"></i>
+      </a>
+    </div>
+  </div>
+
+  <h1>
+    Differentially-Private SGD
+  </h1>
+  <h4>
+    Blogs by Kartikey Sharma
+  </h4>
+  <img src="https://www.pelago.com/img/products/IN-India/red-fort-fast-track-entry-ticket-in-delhi-for-indian-nationals/73964fd1-f3a5-44bf-a088-d8999b4ec1dc_red-fort-fast-track-entry-ticket-in-delhi-for-indian-nationals.jpg" width="800">
+  </div>
+  <p>
+    Differential Privacy:: Crentralized Differential Privacy (client-server trust/statistical queries/where is privacy applied); Interactive vs Non-interactive 
+    model; Distance between 2 databases (formal definition); Adjacency between databases; Why adjacent databases? What happens? Privacy through 
+    Indistinguishablility; Query/Mechanism; Example: adding noise Differential privacy; eplison/delta; Privacy loss, Symmetric, Ideal situation; Where is 
+    aggregation used in Machine Learning? Differential Privacy is a property of the mechanism
+    randomized response
+    laplace mechanism
+  </p>
+</body>
+</html>

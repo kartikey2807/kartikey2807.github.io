@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Differentially-Private SGD</title>
+  <script type="text/javascript" async
+    src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML">
+  </script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="icon" type="image/svg+xml" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y="0.9em" font-size="90">&#x1F916;</text></svg>'>
+  <style>
+    body {
+  background-color: #121212;
+  color: #e0e0e0;
+  font-family: 'Helvetica Neue', sans-serif;
+  margin: 40px auto;
+  max-width: 800px;
+  line-height: 1.6;
+  text-align: justify;
+  box-sizing: border-box;
+  padding-top: 5px; /* to avoid content hidden under fixed header */
+  overflow-x: hidden; /* prevent horizontal scroll */
+}
+
+/* Make sure all elements use border-box */
+*, *::before, *::after {
+  box-sizing: inherit;
+}
+
+.header-ribbon {
+  background: rgba(20,20,20,1);
+  color: white;
+  padding: 10px 0px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: Arial, sans-serif;
+  position: fixed;
+  top: 0;
+  width: 800px; /* match body max-width */
+  max-width: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  box-sizing: border-box;
+}
+
+.left-links, .right-links {
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap; /* prevent wrapping */
+  white-space: nowrap; /* prevent link text wrapping */
+}
+
+.header-ribbon a {
+  color: white;
+  text-decoration: none;
+  margin-left: 15px;
+  display: flex;
+  align-items: center;
+}
+
+.header-ribbon a:first-child {
+  margin-left: 0;
+}
+
+.header-ribbon a:hover {
+  text-decoration: underline;
+}
+
+.right-links i {
+  margin-right: 6px;
+}
+
+.card-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-top: 40px;
+  justify-content: center;
+}
+
+.card {
+  background-color: #1e1e1e;
+  color: #e0e0e0;
+  border-radius: 10px;
+  padding: 20px;
+  width: calc(50% - 20px); /* 2 cards per row with spacing */
+  text-decoration: none;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+}
+
+.card h3 {
+  margin-top: 0;
+  font-size: 1.2em;
+  color: #ffffff;
+  text-align: left;
+}
+
+.card p {
+  margin-bottom: 0;
+  font-size: 0.95em;
+  color: #cccccc;
+  text-align: left;
+}
+
+/* Responsive: Stack on smaller screens */
+@media (max-width: 900px) {
+  .card {
+    width: calc(50% - 20px);
+  }
+}
+
+@media (max-width: 500px) {
+  .card {
+    width: 100%;
+  }
+}
+
+.container {
+  text-align: center
+}
+
+figcaption {
+  color: gray
+}
+  </style>
+</head>
+<body>
+
+  <div class="header-ribbon">
+    <div class="left-links">
+      <a href="index.html" title="Go to Home">
+        <i class="fas fa-home" style="margin-right: 6px;"></i> Home
+      </a>
+    </div>
+    <div class="right-links">
+      <a href="https://www.linkedin.com/in/kartikey2807/" target="_blank" title="LinkedIn">
+        <i class="fab fa-linkedin"></i>
+      </a>
+      <a href="https://github.com/kartikey2807" target="_blank" title="GitHub">
+        <i class="fab fa-github"></i>
+      </a>
+      <a href="mailto:kartikey2807@gmail.com" title="Email Me">
+        <i class="fas fa-envelope"></i>
+      </a>
+    </div>
+  </div>
+
+  <h1>
+    Differentially-Private SGD
+  </h1>
+  <h4>
+    Blogs by Kartikey Sharma || 2025-09-13 || References: 
+    [<a href="https://doi.org/10.1145/3168389">Wagner et al.</a>]
+    [<a href="https://www.cis.upenn.edu/~aaroth/Papers/privacybook.pdf">Dwork et al.</a>]
+  </h4>
+  <img src="https://afar.brightspotcdn.com/dims4/default/17b3d14/2147483647/strip/true/crop/4993x2649+0+519/resize/1440x764!/quality/90/?url=https%3A%2F%2Fk3-prod-afar-media.s3.us-west-2.amazonaws.com%2Fbrightspot%2F9e%2Ff8%2F6b5f8a0948278e15b5eeeb36c03e%2Fshutterstock-1076644442.jpg" width="800" height="500">
+  </div>
+  <p>
+    <b>Overview</b>
+    <br>
+    In this blog, I introduce Centralized Differential Privacy where clients trust the server to keep their information private and share unperturbed data. The public 
+    user can query summary statistics on the aggregated database. The user cannot ask for plain records from the database (<i>NO 'select * from database where 
+    [condition]'</i>). The server is responsible for implementing privacy mechanism on the output query to make it hard for the user to infer any data. An alternative to 
+    this setup is the Local Differential Privacy setup where clients don't trust the server and share perturbed data for collection. The figure below illustrates the 
+    difference between centralized and local setup. There is another categorization of models: non-interactive model which takes a single query and outputs the result 
+    in a sanitised database (there can be multiple queries but privacy mechanism is applied once), and interactive model where the user queries the database sequentially and adaptively 
+    (updates queries based on server's response).
+  </p>
+  <div class="container">
+    <figure>
+      <img src="https://miro.medium.com/1*SPOIawgJJ4i3r8B9KfXb9w.png" width="400"/>
+      <figcaption>Fig. 1 Cetralized vs Local Differential Privacy scheme</figcaption>
+    </figure>
+  </div>
+  <p>
+    <b>Important terms</b>
+    <br>
+    <i>Distance</i> between two databases is defined as the number of records that differ between them. Given \(x,y \in D\), the \(l_1\) distance is defined as 
+    \(\|x-y\|_1\). And two databases are called <i>adjacent</i> if they have atmost one differing record so \(\|x-y\|_1 \leq 1\). So.... let's say there are two 
+    databases A and B which are adjacent, and A contains my record but B does not. If the user queries these two databases and they return the same result (ideally), 
+    can the user say with confidence which database contains my record? &#129300; No!!! And that's the main idea behind differential privacy - privacy through indistinguishability. 
+    The formal definition follows later. Other key definitions include <i>query</i> and <i>mechanism</i>. <i>Query</i> refers to the statistics that the user asks from 
+    the database. It could me mean, min, max, count, median, heavy-hitters, etc. These queries can have numeric or non-numeric results. <i>Mechanism</i> is a randomised 
+    algorithm M with some domain A and range B, such that \(M: A \rightarrow B\) and for each \(a \in A\) it gives \(M(a) = b\) where \(b \in B\) with some probability.
+  </p>
+</body>
+</html>
