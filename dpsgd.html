@@ -167,12 +167,12 @@ figcaption {
   <p>
     <b>Overview</b>
     <br>
-    In this blog, I introduce Centralized Differential Privacy where clients trust the server to keep their information private and share unperturbed data. The public 
+    In this blog, I introduce Centralized Differential Privacy, where clients trust the server to keep their information private and share unperturbed data. The public 
     user can query summary statistics on the aggregated database. The user cannot ask for plain records from the database (NO <i>'select * from database where 
-    [condition]'</i>). The server is responsible for implementing privacy mechanism on the output to a given query to make it hard for the user to infer any data. An alternative to 
-    this setup is the Local Differential Privacy setup where clients don't trust the server and share perturbed data for collection. The figure below illustrates the 
-    difference between centralized and local setup. There is another categorization of models that is important to know: non-interactive model which takes a single query and outputs the result 
-    in a sanitised database (there can be multiple queries but privacy mechanism is applied once), and interactive model where the user queries the database sequentially and adaptively 
+    [condition]'</i>). The server is responsible for implementing a privacy mechanism on the output to a given query to make it hard for the user to infer any data. An alternative to 
+    this setup is the Local Differential Privacy setup, where clients don't trust the server and share perturbed data for collection. The figure below illustrates the 
+    difference between a centralized and local setup. There is another categorization of models that is important to know: a non-interactive model which takes a single query and outputs the result 
+    in a sanitised database (there can be multiple queries but privacy mechanism is applied once), and an interactive model where the user queries the database sequentially and adaptively 
     (updates queries based on server's response).
   </p>
   <div class="container">
@@ -185,11 +185,11 @@ figcaption {
     <b>Important terms</b>
     <br>
     <i>Distance</i> between two databases is defined as the number of records that differ between them. Given \(x,y \in D\), the \(l_1\) distance is defined as 
-    \(\|x-y\|_1\). And two databases are called <i>adjacent</i> if they have atmost one differing record so \(\|x-y\|_1 \leq 1\). So.... let's say there are two 
-    databases A and B which are adjacent, and A contains my record but B does not. If the user queries these two databases and they return the same result (ideally), 
+    \(\|x-y\|_1\). And two databases are called <i>adjacent</i> if they have at most one differing record, so \(\|x-y\|_1 \leq 1\). So.... let's say there are two 
+    databases, A and B, which are adjacent, and A contains my record but B does not. If the user queries these two databases and they return the same result (ideally), 
     can the user say with confidence which database contains my record? &#129300; No!!! And that's the main idea behind differential privacy - privacy through indistinguishability. 
     The formal definition follows later. Other key definitions include <i>query</i> and <i>mechanism</i>. <i>Query</i> refers to the statistics that the user asks from 
-    the database. It could me mean, min, max, count, median, heavy-hitters, etc. These queries can have numeric or non-numeric results. <i>Mechanism</i> is a randomised 
+    the database. It could be mean, min, max, count, median, heavy-hitters, etc. These queries can have numeric or non-numeric results. <i>Mechanism</i> is a randomised 
     algorithm \(M\) with some domain A and range B, such that \(M: A \rightarrow \Delta B\) and for each \(a \in A\) it gives \(M(a) = b\) where \(b \in B\) with some probability.
   </p>
   <p>
@@ -211,7 +211,7 @@ figcaption {
       \(\epsilon = log(\frac{Pr[M(x) \in S]}{Pr[M(y) \in S]})\)
     </div>
     <br>
-    If \(\epsilon\) is small, then probabilities of record being in either database is similar and adversay cannot distinguish. <b>Note: </b>Differential privacy is the 
+    If \(\epsilon\) is small, then probabilities of a record being in either database is similar and the adversary cannot distinguish. <b>Important Note: </b>Differential privacy is the 
     characteristic of the mechanism and does not depend on the database. Differential privacy follows two important properties: composition and post-hoc. Say, mechanism 
     \(M_1\) has privacy budget \(\epsilon_1\) and mechanism \(M_2\) has budget \(\epsilon_2\), then if these two mechanisms are applied consecutively, the total privacy 
     budget is \(\epsilon_1 + \epsilon_2\) by the composition property. And the post-hoc (or post-processing) property states that any operation applied on a differentially 
@@ -251,17 +251,17 @@ figcaption {
   <br>
   If we replace Laplacian noise with Gaussian noise and consider \(l_2\)-sensitivity instead of \(l_1\), then we could ensure (\(\epsilon,\delta\))-differential privacy. 
   Additionally, the variance term has some dependency on \(\delta\) term which I am not going to discuss here. But this should be enough motivate that adding noise 
-  (laplacian or guassian) to deterministic output can give differential privacy guarantees &#x1F44C;. And next we see how this can be added to the machine learning case.
+  (Laplacian or Guassian) to deterministic output can give differential privacy guarantees &#x1F44C;. And next we see how this can be added to the machine learning case.
   </p>
   <p>
   <b>Differential Privacy in machine learning and DP-SGD</b>
   <br>
   Since machine learning models train weights based on a given dataset, these gradient updates definitely carry some information about the given training set. And hence, 
-  if the gradients can be made differentially-private, the adversary cannot tell whether my records were involved in training the model or not. To achieve this, noise 
-  from gaussian distribution can be added to the computed gradients during the backpropagation step. But then how much noise must be injected? Too little noise and we 
+  if the gradients can be made differentially private, the adversary cannot tell whether my records were involved in training the model or not. To achieve this, noise 
+  sampled from a Gaussian distribution can be added to the computed gradients during the backpropagation step. But then how much noise must be injected? Too little noise and we 
   cannot respect privacy for every gradient, and too much noise and gradients become useless. So we add enough noise to hide the largest gardient (in terms of l2 norm) 
   in the batch and that will ensure that all gradients remain private. But gradients are unbounded and can have any value, so? We make them bounded by clipping the norm 
-  with a hyper-paramtere C. Once gradients are clipped, we know the upper bound of gradient sensitivity and tune noise parameter accordingly. Below is the code implementation in PyTorch.
+  with a hyperparamtere C. Once gradients are clipped, we know the upper bound of gradient sensitivity and tune the noise parameter accordingly. Below is the code implementation in PyTorch.
   <br>
   <div class="container">
     <code style="text-align: left;">
