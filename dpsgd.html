@@ -262,16 +262,28 @@ figcaption {
   cannot respect privacy for every gradient, and too much noise and gradients become useless. So we add enough noise to hide the largest gardient (in terms of l2 norm) 
   in the batch and that will ensure that all gradients remain private. But gradients are unbounded and can have any value, so? We make them bounded by clipping the norm 
   with a hyperparamtere C. Once gradients are clipped, we know the upper bound of gradient sensitivity and tune the noise parameter accordingly. Below is the code implementation in PyTorch.
-  <br>
-  <div class="container">
-    <code style="text-align: left;">
-      print("Hello world")
-      print("This is a demo implementation")
-      
-      for i in range(10):
-      	print("die")
-    </code>
-  </div>
   </p>
+  <pre>
+  <code>
+
+
+celoss = CrossEntropyLoss()
+Coptim = Adam(model.parameters(),learning_rate)
+
+model.train()
+for image,label in train_loader:
+
+    Coptim.zero_grad()
+
+    image = image.to(DEVICE)
+    label = label.to(DEVICE)
+
+    preds = model(image)
+    Closs = celoss(preds,label)
+    Closs.backward()
+    
+    
+  </code>
+  </pre>
 </body>
 </html>
