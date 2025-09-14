@@ -168,10 +168,10 @@ figcaption {
     <b>Overview</b>
     <br>
     In this blog, I introduce Centralized Differential Privacy where clients trust the server to keep their information private and share unperturbed data. The public 
-    user can query summary statistics on the aggregated database. The user cannot ask for plain records from the database (<i>NO 'select * from database where 
-    [condition]'</i>). The server is responsible for implementing privacy mechanism on the output query to make it hard for the user to infer any data. An alternative to 
+    user can query summary statistics on the aggregated database. The user cannot ask for plain records from the database (NO <i>'select * from database where 
+    [condition]'</i>). The server is responsible for implementing privacy mechanism on the output to a given query to make it hard for the user to infer any data. An alternative to 
     this setup is the Local Differential Privacy setup where clients don't trust the server and share perturbed data for collection. The figure below illustrates the 
-    difference between centralized and local setup. There is another categorization of models: non-interactive model which takes a single query and outputs the result 
+    difference between centralized and local setup. There is another categorization of models that is important to know: non-interactive model which takes a single query and outputs the result 
     in a sanitised database (there can be multiple queries but privacy mechanism is applied once), and interactive model where the user queries the database sequentially and adaptively 
     (updates queries based on server's response).
   </p>
@@ -190,21 +190,21 @@ figcaption {
     can the user say with confidence which database contains my record? &#129300; No!!! And that's the main idea behind differential privacy - privacy through indistinguishability. 
     The formal definition follows later. Other key definitions include <i>query</i> and <i>mechanism</i>. <i>Query</i> refers to the statistics that the user asks from 
     the database. It could me mean, min, max, count, median, heavy-hitters, etc. These queries can have numeric or non-numeric results. <i>Mechanism</i> is a randomised 
-    algorithm M with some domain A and range B, such that \(M: A \rightarrow \Delta B\) and for each \(a \in A\) it gives \(M(a) = b\) where \(b \in B\) with some probability.
+    algorithm \(M\) with some domain A and range B, such that \(M: A \rightarrow \Delta B\) and for each \(a \in A\) it gives \(M(a) = b\) where \(b \in B\) with some probability.
   </p>
   <p>
     <b>Differential Privacy</b>
     <br>
-    Now the formal definition.... Let's say we have two databases x and y that adjacent \(\|x-y\|_1 \leq 1\) and a mechanism \(M\) with range \(S\). The mechanism is 
-    \(\epsilon,\delta\)-differentially private if
+    Now the formal definition.... Let's say we have two databases \(x\) and \(y\) that are adjacent \(\|x-y\|_1 \leq 1\) and a mechanism \(M\) with range \(S\). The mechanism is 
+    (\(\epsilon,\delta\))-differentially private if
     <br>
     <div class="container">
       \(Pr[M(x) \in S] \leq \exp(\epsilon)Pr[M(y) \in S] + \delta\)
     </div>
     <br>
-    where \(\epsilon\) is the upper bound on the absolute (since the above equation is symmetric in nature) privacy loss and \(1-\delta\) is the confidence with which differential 
-    privacy is guaranteed. A stronger (and easy compute) bound is (\(\epsilon,0\))-differential privacy. This states that the mechanism is <i>always</i> differentially 
-    privacy. Given this, the formula for epsilon look 
+    where \(\epsilon\) is the upper bound on the absolute value of (since the above equation is symmetric in nature) privacy loss and \(1-\delta\) is the confidence with which differential 
+    privacy is guaranteed. A stronger (and easy to compute) bound is (\(\epsilon,0\))-differential privacy which states that the mechanism is <i>always</i> differentially 
+    private. Given this, the formula for \(\epsilon\) look 
     like 
     <br>
     <div class="container">
@@ -215,12 +215,12 @@ figcaption {
     characteristic of the mechanism and does not depend on the database. Differential privacy follows two important properties: composition and post-hoc. Say, mechanism 
     \(M_1\) has privacy budget \(\epsilon_1\) and mechanism \(M_2\) has budget \(\epsilon_2\), then if these two mechanisms are applied consecutively, the total privacy 
     budget is \(\epsilon_1 + \epsilon_2\) by the composition property. And the post-hoc (or post-processing) property states that any operation applied on a differentially 
-    private output remains private (with same \(\epsilon\)). 
+    private output still gives a private result (with same \(\epsilon\)). 
   </p>
   <p>
   <b>Laplace Mechanism</b>
   <br>
-  This mechanism is implemented to add privacy to numeric output. First let's introduce one more concept called \(l_1\) sensitivity (I know a lot of definitions &#128546;) 
+  This mechanism is implemented to add privacy to numeric output. First let's introduce one more concept called \(l_1\) sensitivity (I know lots of definitions &#128546;) 
   for a query function \(f\) which is defined as 
   <br>
   <div class="container">
@@ -245,14 +245,29 @@ figcaption {
     \leq \exp(\frac{\epsilon\|f(y) - f(x)\|_1}{\Delta f}) 
     \leq \exp(\epsilon)\)
   </div>
-  <br>
   </p>
   <p>
   <b>Laplacian noise vs Guassian noise</b>
   <br>
-  If we replace Laplacian noise with Gaussian noise and consider \(l_2\)-sensitivity instead of \(l_1\), then we can assure (\(\epsilon,\delta\))-differential privacy. 
+  If we replace Laplacian noise with Gaussian noise and consider \(l_2\)-sensitivity instead of \(l_1\), then we could ensure (\(\epsilon,\delta\))-differential privacy. 
   Additionally, the variance term has some dependency on \(\delta\) term which I am not going to discuss here. But this should be enough motivate that adding noise 
-  (Laplacian or Guassian) to deterministic output can give differential privacy guarantees. And next we see how this can be added to machine learning case.
+  (laplacian or guassian) to deterministic output can give differential privacy guarantees &#x1F44C;. And next we see how this can be added to the machine learning case.
+  </p>
+  <p>
+  <b>Differential Privacy in machine learning and DP-SGD</b>
+  <br>
+  Since machine learning models train weights based on a given dataset, these gradient updates definitely carry some information about the given training set. And hence, 
+  if the gradients can be made differentially-private, the adversary cannot tell whether my records were involved in training the model or not. To achieve this, noise 
+  from gaussian distribution can be added to the computed gradients during the backpropagation step. But then how much noise must be injected? Too little noise and we 
+  cannot respect privacy for every gradient, and too much noise and gradients become useless. So we add enough noise to hide the largest gardient (in terms of l2 norm) 
+  in the batch and that will ensure that all gradients remain private. But gradients are unbounded and can have any value, so? We make them bounded by clipping the norm 
+  with a hyper-paramtere C. Once gradients are clipped, we know the upper bound of gradient sensitivity and tune noise parameter accordingly. Below is the code implementation in PyTorch.
+  <br>
+  <div class="container">
+    <code style="text-align: left;">
+      print("Hello world")
+    </code>
+  </div>
   </p>
 </body>
 </html>
