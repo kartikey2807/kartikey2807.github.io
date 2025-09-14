@@ -214,7 +214,7 @@ figcaption {
     If \(\epsilon\) is small, then probabilities of a record being in either database is similar and the adversary cannot distinguish. <b>Important Note: </b>Differential privacy is the 
     characteristic of the mechanism and does not depend on the database. Differential privacy follows two important properties: composition and post-hoc. Say, mechanism 
     \(M_1\) has privacy budget \(\epsilon_1\) and mechanism \(M_2\) has budget \(\epsilon_2\), then if these two mechanisms are applied consecutively, the total privacy 
-    budget is \(\epsilon_1 + \epsilon_2\) by the composition property. And the post-hoc (or post-processing) property states that any operation applied on a differentially 
+    budget is \(\epsilon_1 + \epsilon_2\) by the composition property. And the post-hoc (also called post-processing) property states that any operation applied on a differentially 
     private output still gives a private result (with same \(\epsilon\)). 
   </p>
   <p>
@@ -233,9 +233,9 @@ figcaption {
     \(M(x,f(.),\epsilon) = f(x) + Y\)
   </div>
   <br>
-  where \(Y\) is drawn from Lap(\(\Delta f/\epsilon\)). So, \(f(x)\) is the determinitic term and \(Y\) is the noise added to ensure privacy. There is a tradeoff between 
+  where \(Y\) is drawn from Lap(\(\Delta f/\epsilon\)). So, \(f(x)\) is the determinitic term and \(Y\) is the sampled noise added to ensure privacy. There is a tradeoff between 
   sensitivity and privacy budget. Lower privacy budget (good privacy) expects more noise which leads to the output being less and less accurate. It can be proved that Laplace 
-  mechanism guarantees (\(\epsilon,0\))-differential privacy. By looking at the probability density function for x and y (two databases), we can see that 
+  mechanism guarantees (\(\epsilon,0\))-differential privacy. By looking at the probability density function for \(x\) and \(y\), we can see that 
   <br>
   <div class="container">
     \(= \frac{p_x(z)}{p_y(z)} 
@@ -258,7 +258,7 @@ figcaption {
   <br>
   Since machine learning models train weights based on a given dataset, these gradient updates definitely carry some information about the given training set. And hence, 
   if the gradients can be made differentially private, the adversary cannot tell whether my records were involved in training the model or not. To achieve this, noise 
-  sampled from a Gaussian distribution can be added to the computed gradients during the backpropagation step. But then how much noise must be injected? Too little noise and we 
+  sampled from a Gaussian distribution can be added to the computed gradients during backpropagation. But then how much noise must be injected? Too little noise and we 
   cannot respect privacy for every gradient, and too much noise and gradients become useless. So we add enough noise to hide the largest gardient (in terms of l2 norm) 
   in the batch and that will ensure that all gradients remain private. But gradients are unbounded and can have any value, so? We make them bounded by clipping the norm 
   with a hyperparamtere C. Once gradients are clipped, we know the upper bound of gradient sensitivity and tune the noise parameter accordingly. Below is the code implementation in PyTorch.
@@ -266,6 +266,10 @@ figcaption {
   <div class="container">
     <code style="text-align: left;">
       print("Hello world")
+      print("This is a demo implementation")
+      
+      for i in range(10):
+      	print("die")
     </code>
   </div>
   </p>
