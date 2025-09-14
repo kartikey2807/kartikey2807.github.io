@@ -265,25 +265,48 @@ figcaption {
   </p>
   <pre>
   <code>
+## C and NOISE shown below
+## are the hyperparameters
+## define classifier model
+celoss = CrossEnropyLoss()
 
-
-celoss = CrossEntropyLoss()
-Coptim = Adam(model.parameters(),learning_rate)
+Coptim = SGD(model.parameters(),lr=learning_rate)
 
 model.train()
-for image,label in train_loader:
-
-    Coptim.zero_grad()
-
-    image = image.to(DEVICE)
-    label = label.to(DEVICE)
-
-    preds = model(image)
-    Closs = celoss(preds,label)
-    Closs.backward()
+for _, (images,labels) in enumerate(train_loader):
     
+    for param in model.parameters():
+        param.accumulate_grads = []
     
+    for image,label in zip(images,labels):
+        Coptim.zero_grad()
+        
+        image = image.to(DEVICE)
+        label = label.to(DEVICE)
+        
+        preds = model(image)
+        Closs = celoss(preds,label)
+        Closs.backward()
+        
+        ## clip the per-sample gradient
+        for param in model.parameters():
+            
+            gradient = param.grad.detach().clone()
+            l2_norm  = gradient.norm(2)
+            gradient/= max(1,l2_norm/C)
+            
+            param.accumulate_grads.append(gradient)
+    
+    ## inject noise    
+    for param in model.parameters():
+        batch_gradients = torch.stack(param.accumulate_grads,dim=0)
+        batch_gradients = batch_gradients + torch.randn_like(batch_gradient)*C*NOISE
+        
+        param.grad = batch_gardients
+    
+    Coptim.step() # gradient descent
   </code>
   </pre>
+  <hr>
 </body>
 </html>
