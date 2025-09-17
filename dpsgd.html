@@ -261,16 +261,14 @@ figcaption {
   <b>Gaussian Mechanism</b>
   <br>
   We could replace laplacian noise with gaussian noise which gives (\(\epsilon,\delta\))-differential privacy gurantees. The mechanism is as follows: 
-
-
   <br>
   <div class="container">
-    \(M(x,f(.),\epsilon,\delta) = f(x) + N(\sigma^2);  
-    \sigma^2 = \frac{2s^2log(1.25/\delta)}{\epsilon^2}\)
-  <\div>
+    \(M(x,f(.),\epsilon,\delta) = f(x) + N(\sigma^2)\)
+  </div>
+  <div class="container">
+    \(\sigma^2 = \frac{2s^2log(1.25/\delta)}{\epsilon^2}\)
+  </div>
   <br>
-
-
   \(s\) is the sensitivity of the query \(f\). For a given value of \(\epsilon\), the figure below shows the laplace and gaussian distribution. It can be observed that the 
   Gaussian distribution is more spread out and that means that the probability of getting an answer far away from true value is greater. So if Gaussian mechanism gives a 
   weaker privacy bound and is less accurate, why do we use it?
