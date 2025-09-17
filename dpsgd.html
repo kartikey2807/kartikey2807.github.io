@@ -170,7 +170,7 @@ figcaption {
     In this blog, I introduce Centralized Differential Privacy, where clients trust the server to keep their information private and share unperturbed data. The public 
     user can query summary statistics on the aggregated database. The user cannot ask for plain records from the database (NO <i>'select * from database where 
     [condition]'</i>). The server is responsible for implementing a privacy mechanism on the output to a given query to make it hard for the user to infer the presence 
-    or absence any data point in the dataset. An alternative to 
+    or absence any data point in the database. An alternative to 
     this setup is the Local Differential Privacy setup, where clients don't trust the server and share perturbed data for collection. The figure below illustrates the 
     difference between a centralized and local setup. There is another categorization of models that is important to know: a non-interactive model which takes a single query and outputs the result 
     in a sanitised database (there can be multiple queries but privacy mechanism is applied once), and an interactive model where the user queries the database sequentially and adaptively 
@@ -185,12 +185,12 @@ figcaption {
   <p>
     <b>Important terms</b>
     <br>
-    <i>Distance</i> between two databases is defined as the number of records that differ between them. Given \(x,y \in D\), the \(l_1\) distance is defined as 
-    \(\|x-y\|_1\). And two databases are called <i>adjacent</i> if they differ in at most one record so \(\|x-y\|_1 \leq 1\). So.... let's say there are two 
+    <u>Distance</u> between two databases is defined as the number of records that differ between them. Given \(x,y \in D\), the \(l_1\) distance is defined as 
+    \(\|x-y\|_1\). And two databases are called <u>adjacent</u> if they differ in at most one record so \(\|x-y\|_1 \leq 1\). So.... let's say there are two 
     databases, A and B, which are adjacent, and A contains my record but B does not. If the user queries these two databases and they return the same result (ideally), 
     can the user say with confidence which database contains my record? &#129300; No!!! And that's the main idea behind differential privacy - privacy through indistinguishability. 
-    The formal definition follows later. Other key definitions include <i>query</i> and <i>mechanism</i>. <i>Query</i> refers to the statistics that the user asks from 
-    the database. It could be mean, min, max, count, median, heavy-hitters, etc. These queries can have numeric or non-numeric results. <i>Mechanism</i> is a randomised 
+    The formal definition follows later. Other key definitions include query and mechanism. <u>Query</u> refers to the statistics that the user asks from 
+    the database. It could be mean, min, max, count, median, heavy-hitters, etc. These queries can have numeric or non-numeric results. <u>Mechanism</u> is a randomised 
     algorithm \(M\) with some domain A and range B, such that \(M: A \rightarrow \Delta B\) and for each \(a \in A\) it gives \(M(a) = b\) where \(b \in B\) with some probability.
   </p>
   <p>
@@ -205,7 +205,7 @@ figcaption {
     <br>
     where \(\epsilon\) is the upper bound on the absolute value of (since the above equation is symmetric in nature) privacy loss and \(1-\delta\) is the confidence with which differential 
     privacy is guaranteed. A stronger (and easy to compute) bound is (\(\epsilon,0\))-differential privacy which states that the mechanism is <i>always</i> differentially 
-    private. This is also called the Pure-differential privacy and the formula for \(\epsilon\) looks like 
+    private. The formula for \(\epsilon\) looks like 
     <br>
     <div class="container">
       \(\epsilon = log(\frac{Pr[M(x) \in S]}{Pr[M(y) \in S]})\)
@@ -213,25 +213,25 @@ figcaption {
     <br>
     If \(\epsilon\) is small, then probabilities of a record being in either database is similar and the adversary cannot distinguish. <b>Important Note: </b>Differential privacy is the 
     characteristic of the mechanism and does not depend on the database. Differential privacy follows two important properties: composition and post-processing. Say, mechanism 
-    \(M_1\) has privacy budget \(\epsilon_1\) and mechanism \(M_2\) has budget \(\epsilon_2\), then if these two mechanisms are applied consecutively, the total privacy 
-    budget is \(\epsilon_1 + \epsilon_2\) by the composition property. To be precise, this is called Sequential composition. In parallel composition, if a mechanism is 
+    \(M_1\) has privacy budget \(\epsilon_1\) and failure probability \(\delta_1\) and mechanism \(M_2\) has budget \(\epsilon_2\) and probability \(\delta_2\), then if these two mechanisms are applied consecutively, the total privacy 
+    budget is \(\epsilon_1 + \epsilon_2\) and the total failure probability is \(\delta_1 + \delta_2\) by the composition property. To be precise, this is called Sequential composition. In parallel composition, if a mechanism is 
     (\(\epsilon,\delta\))-differentially private and the database \(X\) is split into disjoint databases \(x_1,x_2,....\) then releasing all the scores \(M(x_1),M(x_2),...\) 
     is also (\(\epsilon,\delta\))-differentially private. Finally, the post-processing property states that any operation applied on a differentially private output still gives a private result (with same \(\epsilon\)).
   </p>
   <p>
   <b>Laplace Mechanism</b>
   <br>
-  Remember that the laplace distribution with 0 mean and \(S\) deviation looks like 
+  Remember that:
   <br>
   <div class="container">
     \(Lap(S) = \frac{1}{2S}\exp(-\frac{\|x\|}{S})\)
   </div>
   <br>
-  This mechanism is implemented to add privacy to numeric output. First let's introduce the concept of \(l_1\) sensitivity (I know lots of definitions &#128546;) 
-  for a query function \(f\) applied on two adjacent databases \(x\) and \(y\) which is defined as 
+  This mechanism is implemented to add privacy to numeric output. First let's introduce the concept of \(L_1\) sensitivity (I know lots of definitions &#128546;) 
+  for a query function \(f\) applied on two adjacent databases \(x\) and \(y\) which could be defined as follows 
   <br>
   <div class="container">
-    \(\Delta f_1 = max_{x,y: \|x-y\|_1 \leq 1} \|f(x) - f(y)\|_1\)
+    \(\Delta f_1 = max_{\|x-y\|_1 \leq 1} \|f(x) - f(y)\|_1\)
   </div>
   <br>
   Informally, this can be seen as the maximum difference in \(L_1\)-norm of \(f\) for two adjacent databases. Sensitivity for a counting query (COUNT in Sql) can be easily 
@@ -258,11 +258,33 @@ figcaption {
   </div>
   </p>
   <p>
+  <b>Gaussian Mechanism</b>
+  <br>
+  We could replace laplacian noise with gaussian noise which gives (\(\epsilon,\delta\))-differential privacy gurantees. The mechanism is as follows:
+  <br>
+  <div class="container">
+    \(M(x,f(.),\epsilon,\delta) = f(x) + Y\) 
+    and \(Y ~ N(\sigma^2)\), 
+    where \(\sigma^2 = \frac{2s^2log(1.25/\delta)}{\epsilon^2}\)
+  </div>
+  <br>
+  \(s\) is the sensitivity of the query \(f\). For a given value of \(\epsilon\), the figure below shows the laplace and gaussian distribution. It can be observed that the 
+  Gaussian distribution is more spread out and that means that the probability of getting an answer far away from true value is greater. So if Gaussian mechanism gives a 
+  weaker privacy bound and is less accurate, why do we use it?
+  </p>
+  <div class="container">
+    <figure>
+      <img src="https://i-blog.csdnimg.cn/blog_migrate/307977dc771db13ffa3b5f501200cabb.png" width="400"/>
+      <figcaption>Fig. 2 Laplace vs Gaussian distribution (for same \(\epsilon\))</figcaption>
+    </figure>
+  </div>
+  <p>
   <b>Laplacian noise vs Guassian noise</b>
   <br>
   Let's say you compute the sensitivity of laplacian noise for a given vector of \(d\) dimensions. If the sensitivity for each element is \(\alpha\), then the sensitivity 
-  for the entire vector \(\Delat f_1\) is \(d\alpha\) (linear increase). This is not desirable in case of machine learning data where the feature size can be very large. 
-  Larger sensitivity means larger noise and less accurate results. 
+  for the entire vector \(\Delta f_1\) is \(d\alpha\) (linear increase). This is not desirable in case of machine learning data where the feature size can be very large. 
+  Larger sensitivity means larger noise and less accurate results. Hence the solution is Gaussian noise!! Gaussian satisfies differential privacy with \(L_2\) sensitivity 
+  where the sensitivity for the entire vector would be \(\sqrt{d}\alpha\). And that is a major strength for Gaussian mechanism.
   </p>
   <p>
   <b>Differential Privacy in machine learning and DP-SGD</b>
