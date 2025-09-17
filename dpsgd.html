@@ -205,8 +205,7 @@ figcaption {
     <br>
     where \(\epsilon\) is the upper bound on the absolute value of (since the above equation is symmetric in nature) privacy loss and \(1-\delta\) is the confidence with which differential 
     privacy is guaranteed. A stronger (and easy to compute) bound is (\(\epsilon,0\))-differential privacy which states that the mechanism is <i>always</i> differentially 
-    private. This is also called the Pure-differential privacy and the formula for \(\epsilon\) looks like
-    like 
+    private. This is also called the Pure-differential privacy and the formula for \(\epsilon\) looks like 
     <br>
     <div class="container">
       \(\epsilon = log(\frac{Pr[M(x) \in S]}{Pr[M(y) \in S]})\)
@@ -222,20 +221,24 @@ figcaption {
   <p>
   <b>Laplace Mechanism</b>
   <br>
-  Remember that:
+  Remember that the laplace distribution with 0 mean and \(S\) deviation looks like 
   <br>
   <div class="container">
     \(Lap(S) = \frac{1}{2S}\exp(-\frac{\|x\|}{S})\)
   </div>
   <br>
-  This mechanism is implemented to add privacy to numeric output. First let's introduce one more concept called \(l_1\) sensitivity (I know lots of definitions &#128546;) 
-  for a query function \(f\) which is defined as 
+  This mechanism is implemented to add privacy to numeric output. First let's introduce the concept of \(l_1\) sensitivity (I know lots of definitions &#128546;) 
+  for a query function \(f\) applied on two adjacent databases \(x\) and \(y\) which is defined as 
   <br>
   <div class="container">
-    \(\Delta f = max_{x,y \in D,\|x-y\|_1 \leq 1} \|f(x) - f(y)\|_1\)
+    \(\Delta f_1 = max_{x,y: \|x-y\|_1 \leq 1} \|f(x) - f(y)\|_1\)
   </div>
   <br>
-  Informally, this can be seen as the maximum difference in \(L_1\)-norm of \(f\) for two adjacent databases. The Laplace mechanism states that for a function \(f\) 
+  Informally, this can be seen as the maximum difference in \(L_1\)-norm of \(f\) for two adjacent databases. Sensitivity for a counting query (COUNT in Sql) can be easily 
+  figured out and its always 1. Because if you change your database \(x\) to an adjacent database \(y\) then the count will either increase by 1 or stay the same. For summing 
+  (or aggregating) queries, on the other hand, there is no bound. It depends on the content of the record added or deleted. So how do we compute the sensitivity in this case? 
+  The frequently used method is to clip the elements in the summation. And so there is an upper bound and lower bound by which the value of the query can vary. Remember this idea &#128526;. 
+  The Laplace mechanism states that for a function \(f\) 
   <br>
   <div class="container">
     \(M(x,f(.),\epsilon) = f(x) + Y\)
@@ -257,9 +260,9 @@ figcaption {
   <p>
   <b>Laplacian noise vs Guassian noise</b>
   <br>
-  If we replace Laplacian noise with Gaussian noise and consider \(l_2\)-sensitivity instead of \(l_1\), then we could ensure (\(\epsilon,\delta\))-differential privacy. 
-  Additionally, the variance term has some dependency on \(\delta\) term which I am not going to discuss here. But this should be enough motivate that adding noise 
-  (Laplacian or Guassian) to deterministic output can give differential privacy guarantees &#x1F44C;. And next we see how this can be added to the machine learning case.
+  Let's say you compute the sensitivity of laplacian noise for a given vector of \(d\) dimensions. If the sensitivity for each element is \(\alpha\), then the sensitivity 
+  for the entire vector \(\Delat f_1\) is \(d\alpha\) (linear increase). This is not desirable in case of machine learning data where the feature size can be very large. 
+  Larger sensitivity means larger noise and less accurate results. 
   </p>
   <p>
   <b>Differential Privacy in machine learning and DP-SGD</b>
