@@ -221,13 +221,13 @@ figcaption {
   <p>
   <b>Laplace Mechanism</b>
   <br>
-  Remember that:
+  Remember that the Laplace distribution with a mean \(0\) and a scale \(S\) as the following formulation.
   <br>
   <div class="container">
     \(Lap(S) = \frac{1}{2S}\exp(-\frac{\|x\|}{S})\)
   </div>
   <br>
-  This mechanism is implemented to add privacy to numeric output. First let's introduce the concept of \(L_1\) sensitivity (I know lots of definitions &#128546;) 
+  This mechanism is implemented to add privacy to numeric output. Let's introduce the concept of \(L_1\) sensitivity (I know lots of definitions &#128546;) 
   for a query function \(f\) applied on two adjacent databases \(x\) and \(y\) which could be defined as follows 
   <br>
   <div class="container">
@@ -263,10 +263,11 @@ figcaption {
   We could replace laplacian noise with gaussian noise which gives (\(\epsilon,\delta\))-differential privacy gurantees. The mechanism is as follows:
   <br>
   <div class="container">
-    \(M(x,f(.),\epsilon,\delta) = f(x) + Y\) 
-    and \(Y ~ N(\sigma^2)\), 
-    where \(\sigma^2 = \frac{2s^2log(1.25/\delta)}{\epsilon^2}\)
+    \(M(x,f(.),\epsilon,\delta) = f(x) + N(\sigma^2)\)
   </div>
+  <div class="container">
+    where \(\sigma^2 = \frac{2s^2log(1.25/\delta)}{\epsilon^2}\)
+  <\div>
   <br>
   \(s\) is the sensitivity of the query \(f\). For a given value of \(\epsilon\), the figure below shows the laplace and gaussian distribution. It can be observed that the 
   Gaussian distribution is more spread out and that means that the probability of getting an answer far away from true value is greater. So if Gaussian mechanism gives a 
@@ -274,7 +275,7 @@ figcaption {
   </p>
   <div class="container">
     <figure>
-      <img src="https://i-blog.csdnimg.cn/blog_migrate/307977dc771db13ffa3b5f501200cabb.png" width="400"/>
+      <img src="https://miro.medium.com/v2/resize:fit:1040/0*mm6sRWN8Mg1YjGy6.png" width="400"/>
       <figcaption>Fig. 2 Laplace vs Gaussian distribution (for same \(\epsilon\))</figcaption>
     </figure>
   </div>
@@ -282,9 +283,9 @@ figcaption {
   <b>Laplacian noise vs Guassian noise</b>
   <br>
   Let's say you compute the sensitivity of laplacian noise for a given vector of \(d\) dimensions. If the sensitivity for each element is \(\alpha\), then the sensitivity 
-  for the entire vector \(\Delta f_1\) is \(d\alpha\) (linear increase). This is not desirable in case of machine learning data where the feature size can be very large. 
-  Larger sensitivity means larger noise and less accurate results. Hence the solution is Gaussian noise!! Gaussian satisfies differential privacy with \(L_2\) sensitivity 
-  where the sensitivity for the entire vector would be \(\sqrt{d}\alpha\). And that is a major strength for Gaussian mechanism.
+  for the entire vector \(\Delta f_1\) is \(d\alpha\) (linear increase). This is not desirable in case of machine learning where the feature size can be very large. 
+  Larger sensitivity means larger noise and less accurate results. Gaussian noise is the solution! Gaussian satisfies differential privacy with \(L_2\) sensitivity where the sensitivity for the 
+  entire vector would be \(\sqrt{d}\alpha\). And that is a major strength for Gaussian mechanism. 
   </p>
   <p>
   <b>Differential Privacy in machine learning and DP-SGD</b>
