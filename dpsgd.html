@@ -299,22 +299,29 @@ figcaption {
   </p>
   <pre>
   <code>
-## C and NOISE shown below
-## are the hyperparameters
-## define classifier model
+## model hyper-parameters
+## C is clipping constant
+## and NOISE is deviation
+## for the Gaussian noise
+NORM = 1
+NOISE = 3
+BATCH_SIZE = 64
 celoss = CrossEnropyLoss()
 
-Coptim = SGD(model.parameters(),lr=learning_rate)
+Coptim = SGD(
+    lr=LEARNING_RATE,
+    params=model.parameters()
+)
 
 model.train()
-for _, (images,labels) in enumerate(train_loader):
-    
-    for param in model.parameters():
-        param.accumulate_grads = []
+for images, labels in train_loader:
+
+    acc = dict()
+    for i, param in enumerate(model.parameters()):
+        acc[i] = 0
     
     for image,label in zip(images,labels):
         Coptim.zero_grad()
-        
         image = image.to(DEVICE)
         label = label.to(DEVICE)
         
@@ -323,22 +330,22 @@ for _, (images,labels) in enumerate(train_loader):
         Closs.backward()
         
         ## clip the per-sample gradient
+        j = 0
         for param in model.parameters():
-            
-            gradient = param.grad.detach().clone()
-            l2_norm  = gradient.norm(2)
-            gradient/= max(1,l2_norm/C)
-            
-            param.accumulate_grads.append(gradient)
+    
+            g = param.grad.detach().clone()
+            g = g / max(1,g.norm(p=2)/NORM)
+            acc[j] += g ## accumulate grads
+            j += 1
     
     ## inject noise    
-    for param in model.parameters():
-        batch_gradients = torch.stack(param.accumulate_grads,dim=0)
-        batch_gradients = batch_gradients + torch.randn_like(batch_gradient)*C*NOISE
+    for i, param in enumerate(model.parameters()):
+        temp = acc[i]
+        temp = (temp + torch.randn_like(temp)*NOISE*NORM) / BATCH_SIZE
         
-        param.grad = batch_gardients
+        param.grad = temp.to(DEVICE)
     
-    Coptim.step() # gradient descent
+    Coptim.step()
   </code>
   </pre>
   <hr>
